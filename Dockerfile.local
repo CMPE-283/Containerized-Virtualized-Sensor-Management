@@ -1,5 +1,6 @@
 # Set the base image to use to Ubuntu
-FROM ubuntu:14.04
+#FROM ubuntu:14.04
+FROM amazon/aws-eb-python:3.4.2-onbuild-3.5.1
 
 MAINTAINER Prasanna Rishiraj
 
@@ -10,8 +11,8 @@ ENV DOCKYARD_PROJDIR=/projdir
 ENV DOCKYARD_CVSMSPROJ=/projdir/cvsms_django
 
 # Update the default application repository sources list
-RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y python python-pip
+#RUN apt-get update && apt-get -y upgrade
+#RUN apt-get install -y python python-pip
 
 # Create application subdirectories
 WORKDIR $DOCKYARD_PROJDIR
