@@ -1,10 +1,29 @@
 # Set the base image to use to Ubuntu
-FROM amazon/aws-eb-python:3.4.2-onbuild-3.5.1
+FROM ubuntu:14.04
 
 MAINTAINER Prasanna Rishiraj
 
-RUN pip install -r requirements.txt
+ENV DOCKYARD_SRC=cvsms_django
+
+ENV DOCKYARD_PROJDIR=/projdir
+
+ENV DOCKYARD_CVSMSPROJ=/projdir/cvsms_django
+
+# Update the default application repository sources list
+RUN apt-get update && apt-get -y upgrade
+RUN apt-get install -y python python-pip
+
+# Create application subdirectories
+WORKDIR $DOCKYARD_PROJDIR
+
+COPY $DOCKYARD_SRC $DOCKYARD_CVSMSPROJ
+
+RUN pip install -r $DOCKYARD_CVSMSPROJ/requirements.txt
+
 
 EXPOSE 8000
 
-ENTRYPOINT ["~/Containerized-Virtualized-Sensor-Management/entrypoint.sh"]
+WORKDIR $DOCKYARD_CVSMSPROJ
+COPY ./entrypoint.sh /
+
+ENTRYPOINT ["/entrypoint.sh"]
