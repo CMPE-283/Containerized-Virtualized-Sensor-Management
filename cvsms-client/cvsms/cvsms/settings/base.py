@@ -49,7 +49,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'portal.apps.PortalConfig',
-    'smart_selects'
 )
 
 MIDDLEWARE_CLASSES = (
