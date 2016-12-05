@@ -14,7 +14,7 @@ lib64
 /static/
 workspace.xml
 /env/
-/*.ini
+*.ini
 /cover/
 /ssl/
 .DS_Store
