@@ -1,0 +1,75 @@
+{% load static %}
+<html>
+<head>
+    <title>CVSMS</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <link rel='stylesheet' href="/static/style.css">
+</head>
+<body>
+<div class="container sigin-page">
+    <div class="row">
+        <div class="col-md-12">
+            <span><h2>CVSMS - Containerized Virtual Sensor Management System</h2></span>
+        </div>
+    </div>
+    <div class="row login-register">
+        <div class="col-md-5 col-md-offset-3">
+            <ul id="tabs" class="nav nav-tabs">
+                <li class="login-tab {{ login }}">
+                    <a href="{% url 'portal:login' %}"><span class="glyphicon glyphicon-circle-arrow-right"
+                                                              aria-hidden="true"></span> Sign in</a>
+                </li>
+                <li class="register-tab {{ register }}">
+                    <a href="{% url 'portal:register' %}"><span class="glyphicon glyphicon-plus-sign"
+                                                                aria-hidden="true"></span> Register</a>
+                </li>
+            </ul>
+            <div id="my-tab-content" class="tab-content">
+                <div class="tab-pane {{ login }}" id="signin">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form accept-charset="UTF-8" role="form" action="" method="post">
+                                {% csrf_token %}
+                                {% include 'form_template.html' %}
+                                <div class="form-group">
+                                    <div class="col-sm-offset-9 col-sm-3">
+                                        <button id="login" type="submit" class="form-control btn btn-primary">Sign in</button>
+                                    </div>
+                                </div>
+			      	        </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane {{ register }}" id="register">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form accept-charset="UTF-8" role="form" action="" method="post">
+                                {% csrf_token %}
+                                {% include 'form_template.html' %}
+                                <div class="form-group">
+                                    <div class="col-sm-offset-9 col-sm-3">
+                                        <button id="register-btn" type="submit" class="form-control btn btn-primary">Register</button>
+                                    </div>
+                                </div>
+			      	        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<!--<script type="text/javascript">-->
+    <!--jQuery(document).ready(function ($) {-->
+        <!--$('#tabs').tab();-->
+    <!--});-->
+<!--</script>-->

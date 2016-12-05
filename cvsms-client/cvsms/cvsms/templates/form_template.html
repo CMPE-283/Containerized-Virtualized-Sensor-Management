@@ -1,0 +1,14 @@
+{% if form.errors %}
+    <div class="error-msg" ng-show="error">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        {{ form.non_field_errors }}
+    </div>
+{% endif %}
+{% for field in form %}
+    <div class="form-group">
+        <div class="error-msg" ng-show="error">
+            {{ field.errors }}
+        </div>
+        {{ field }}
+    </div>
+{% endfor %}

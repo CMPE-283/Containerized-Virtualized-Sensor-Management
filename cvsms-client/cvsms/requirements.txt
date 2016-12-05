@@ -1,0 +1,7 @@
+Django==1.10.3
+django-smart-selects==1.2.6
+gevent==1.1a2
+greenlet==0.4.10
+gunicorn==19.3.0
+mysqlclient==1.3.9
+
