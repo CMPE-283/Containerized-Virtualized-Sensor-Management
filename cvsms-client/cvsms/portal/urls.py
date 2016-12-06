@@ -8,6 +8,8 @@ urlpatterns = [
 
     url(r'^$', views.UserLoginView.as_view(), name='login'),
     url(r'^register$', views.RegistrationView.as_view(), name='register'),
-    url(r'^home$', views.HomeView.as_view(), name='home'),
+    url(r'^dashboard$', views.dashboard, name='dashboard'),
+    url(r'^add$', views.AddSensor.as_view(), name='add_sensor'),
     url(r'^logout$', views.logoutView, name='logout'),
+    url(r'^delete/(?P<pk>[0-9]+)/$', views.delete_sensor, name="delete"),
 ]
