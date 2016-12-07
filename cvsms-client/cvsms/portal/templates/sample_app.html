@@ -1,0 +1,93 @@
+{% load static %}
+<html>
+<head>
+    <title>CVSMS</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <link rel='stylesheet' href="/static/style.css">
+</head>
+<body>
+{% include 'navigation.html' %}
+<div class="container padding-body">
+    <div class="row" style="margin-top: 70px; margin-left: 20px;">
+        {% include 'popups.html' %}
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Your sensors
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table id="sensor-list" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Sensor name</th>
+                                    <th>Type</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if sensor_data %}
+                                    {% for sensor in sensor_data %}
+                                        <tr class="clickable-row" id="{{ forloop.counter }}">
+                                            <td>{{ sensor.station_name }}</td>
+                                            <td>{{ sensor.sensor_type }}</td>
+                                            <td>{{ sensor.location }}</td>
+                                            {% if sensor.active %}
+                                                <td class="text-success"><strong>Active</strong></td>
+                                            {% else %}
+                                                <td class="text-danger"><strong>Inactive</strong></td>
+                                            {% endif %}
+                                            <td><a role="button" href="{% url 'portal:delete' sensor.id%}" class="btn btn-danger">Delete</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                                </tbody>
+                            </table>
+                            <div class="text-right">
+                                <ul class="pagination text-right">
+                                    {% if sensor_data.paginator.num_pages > 1 %}
+                                        {% for num in sensor_data.paginator.page_range %}
+                                            <li><a href="?page={{ num }}">{{ num }}</a></li>
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% if sensor_data.paginator.num_pages > 1 %}
+                            <div class="text-right">
+                                <a href="{% url 'manage_sensors:manage' %}">View All Sensors <i
+                                        class="fa fa-arrow-circle-right"></i></a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div id="map_wrapper">
+                    <div id="map_canvas" class="mapping">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<script id="map-script" src="/static/dashboard.js" location-data="{{ latlongdata }}"></script>
+<script>
+    $('#sensor-list').on('click', '.clickable-row', function (event) {
+        $(this).addClass('table-row-color').siblings().removeClass('table-row-color');
+    });
+</script>
+
+</body>
+</html>
