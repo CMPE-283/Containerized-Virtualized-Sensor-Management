@@ -14,7 +14,7 @@
 {% include 'navigation.html' %}
 <div class="container padding-body">
     <div class="row" style="margin-top: 70px; margin-left: 20px;">
-{#        {% include 'popups.html' %}#}
+        {% include 'popups.html' %}
         <div class="row">
             <div class="col-lg-7">
                 <div class="panel panel-primary">
@@ -63,7 +63,7 @@
                         </div>
                         {% if sensor_data.paginator.num_pages > 1 %}
                             <div class="text-right">
-                                <a href="{% url 'manage_sensors:manage' %}">View All Sensors <i
+                                <a href="">View All Sensors <i
                                         class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         {% endif %}

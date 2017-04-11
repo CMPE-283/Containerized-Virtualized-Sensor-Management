@@ -11,5 +11,7 @@ urlpatterns = [
     url(r'^dashboard$', views.dashboard, name='dashboard'),
     url(r'^add$', views.AddSensor.as_view(), name='add_sensor'),
     url(r'^logout$', views.logoutView, name='logout'),
-    url(r'^delete/(?P<pk>[0-9]+)/$', views.delete_sensor, name="delete"),
+    url(r'^dashboard/delete/(?P<pk>[0-9]+)/$', views.delete_sensor, name="delete"),
+    url(r'^sample_app$', views.SampleApp.as_view(), name='sample_app'),
+    url(r'^sample_app/(?P<pk>[0-9]+)/$', views.api, name='api'),
 ]

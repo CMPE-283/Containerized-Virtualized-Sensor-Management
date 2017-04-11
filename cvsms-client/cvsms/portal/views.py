@@ -1,5 +1,5 @@
 from django.views.generic import View
-from portal.forms import LoginForm, RegistrationForm, AddSensorForm
+from portal.forms import LoginForm, RegistrationForm, AddSensorForm, SampleAppForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
@@ -8,13 +8,20 @@ from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 from portal.models import SensorDetail
 from django.contrib.auth.decorators import login_required
+from docker import Client
+import docker
 import random
 import json
-import logging
 import uuid
+from ConfigParser import RawConfigParser
 
-logger = logging.getLogger(__name__);
 
+config = RawConfigParser()
+config.read('cvsms/settings/config.ini')
+
+DOCKER_USERNAME = config.get('docker', 'DOCKER_USERNAME')
+DOCKER_PASSWORD = config.get('docker', 'DOCKER_PASSWORD')
+DOCKER_REPO = config.get('docker', 'DOCKER_REPO')
 
 class UserLoginView(View):
     form_class = LoginForm
@@ -88,7 +95,7 @@ class RegistrationView(View):
 @login_required()
 def dashboard(request):
     all_sensor_data = SensorDetail.objects.filter(sensorOwner=request.user)
-    paginator = Paginator(all_sensor_data, 3)
+    paginator = Paginator(all_sensor_data, 20)
     sensor_page = request.GET.get('page')
     try:
         sensor_data = paginator.page(sensor_page)
@@ -107,8 +114,13 @@ def dashboard(request):
         singledata.append(sensor.latitude)
         singledata.append(sensor.longitude)
         latlongdata.append(singledata)
+    success_msg = ''
+
+    if request.session.get('deleted', False):
+        success_msg = 'Sensor deleted successfully'
+        request.session['deleted'] = False
     return render(request, 'dashboard.html', {'sensor_data': sensor_data, 'latlongdata': json.dumps(latlongdata),
-                                              'info_msg': info_msg})
+                                              'info_msg': info_msg, 'success_msg': success_msg})
 
 
 class AddSensor(View):
@@ -120,7 +132,7 @@ class AddSensor(View):
         form = self.form_class(None)
         user = request.user
         available_sensors = SensorDetail.objects.filter(sensorOwner=user)
-        paginator = Paginator(available_sensors, 5)
+        paginator = Paginator(available_sensors, 20)
         sensor_page = request.GET.get('page')
         try:
             sensor_data = paginator.page(sensor_page)
@@ -151,11 +163,28 @@ class AddSensor(View):
             form = self.form_class(None)
         available_sensors = SensorDetail.objects.filter(sensorOwner=request.user)
 
+        # Container creation
+
+        dockerClient = Client('unix://var/run/docker.sock',version='auto')
+        # host_config = dockerClient.create_host_config(port_bindings={1111: 4567,2222: None}
+
+        # dockerClient = docker.from_env()
+        global DOCKER_USERNAME
+        global DOCKER_PASSWORD
+        global DOCKER_REPO
+        dockerClient.login(DOCKER_USERNAME, DOCKER_PASSWORD)
+
+        dockerClient.pull(DOCKER_REPO, stream=True)
+        container = dockerClient.create_container(image=DOCKER_REPO,
+                                                  environment = {'sensortype': sensor.sensor_type,'sensorid': sensor.sensor_id})
+
+        sensor.container_id = container.get('Id')
+        dockerClient.start(container)
         # ami = getImageID(tag)
         # sensor.ip_address = createServer(ami, tag)
         sensor.save()
-        return render(request, self.template_name, {'form': form, 'available_sensors': available_sensors,
-                                                    'success_message': 'Sensor added successfully'})
+        return render(request, self.template_name, {'form': form, 'available_sensors': available_sensors, 'sensor': sensor,
+                                                    'success_msg': 'Sensor '+str(sensor.sensor_id)+' added successfully'})
 
     def get_sensor_id(self):
         sensor_present = True
@@ -171,15 +200,50 @@ class AddSensor(View):
 @login_required()
 def delete_sensor(request, pk):
     sensor = SensorDetail.objects.get(id=pk)
+
+    global DOCKER_USERNAME
+    global DOCKER_PASSWORD
+    global DOCKER_REPO
+
+    dockerClient = Client(base_url='unix://var/run/docker.sock', version='auto')
+    dockerClient.login(DOCKER_USERNAME, DOCKER_PASSWORD)
+
+    container = {'Id':sensor.container_id}
+
+    dockerClient.stop(container=container)
+
     sensor.delete()
 
-    # user_sensor_data = SensorDetail.objects.filter(sensorOwner=request.user)
-    # available_sensor_data = SensorDetail.objects.all()
-    # success_message = 'Sensor deleted'
-
+    request.session['deleted'] = True
     return redirect('portal:dashboard')
 
 
 def logoutView(request):
     logout(request)
     return redirect('portal:login')
+
+
+class SampleApp(View):
+    form_class = SampleAppForm
+    template_name = 'sample_app.html'
+
+    # Display a blank form
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form, 'register': 'active'})
+
+   # Submit form
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            # cleaned (normalized) data
+            sensor_id = form.cleaned_data['sensor_id']
+            form = self.form_class(None)
+
+        return render(request, 'api.html', {'sensor_id': sensor_id})
+
+
+
+def api(request, pk):
+    print 'ID '+ pk
+    return render(request, 'api.html', {'sensor_id':pk})

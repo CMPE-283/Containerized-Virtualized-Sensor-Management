@@ -25,3 +25,6 @@ workspace.xml
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# For Jekyll site
+_site/

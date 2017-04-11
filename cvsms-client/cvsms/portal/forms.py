@@ -43,3 +43,11 @@ class AddSensorForm(forms.ModelForm):
     class Meta:
         model = SensorDetail
         fields = ['station_name', 'station_desc', 'sensor_type', 'location', 'latitude', 'longitude']
+
+
+class SampleAppForm(forms.ModelForm):
+    sensor_id = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sensor Id'}))
+
+    class Meta:
+        model = SensorDetail
+        fields = ['sensor_id']

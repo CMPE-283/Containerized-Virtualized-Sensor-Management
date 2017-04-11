@@ -91,12 +91,14 @@ var inter = setInterval(function() {
 // ** Update data section (Called from the onclick)
 var mydata = new Array();
 
-function updateData() {
 
+function updateData() {
+    var vars= getUrlVars();
+    var myUrl = "http://54.153.79.58:5000/getData/{{ sensor_id }}";
     $.ajax({ 
         type: "GET",
         dataType: "json",
-        url: "http://54.153.79.58:5000/getData/6452e4e847e94b42af896ac3e14d56ad",
+        url: myUrl,
         success: function(dd){
             dd["date"] = parseDate(dd["date"]);
             dd["close"] = +dd["value"];
@@ -121,6 +123,14 @@ function updateData() {
                 .call(yAxis);
         }
     });
+}
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
 }
 
 </script>
